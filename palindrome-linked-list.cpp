@@ -7,7 +7,7 @@ struct ListNode {
     int val;
     ListNode *next;
 
-    ListNode(int x= 0)
+    ListNode(int x)
         : val(x), next(nullptr)
     { }
 };
@@ -15,43 +15,35 @@ struct ListNode {
 class Solution {
 
     private:
-        bool isMiddleReached= false;
-        ListNode *frontTracker;
+        ListNode* startPointer= NULL;
+        bool startPointerReachedListMiddle= false;
 
-        bool recursiveHelper(ListNode *head) {
+        bool recursiveHelper(ListNode* endPointer) {
 
-            if(head == NULL)
+            if(endPointer == NULL)
                 return true;
 
-            bool recursionResult= recursiveHelper(head->next);
+            bool result= recursiveHelper(endPointer->next);
 
-            if(!recursionResult)
-                return false;
+            if(!result || this->startPointerReachedListMiddle)
+                return result;
 
-            else if(this->isMiddleReached)
-                return true;
+            else {
+                bool result= this->startPointer->val == endPointer->val;
 
-            else if(this->frontTracker->val == head->val) {
+                if(this->startPointer == endPointer || this->startPointer->next == endPointer)
+                    this->startPointerReachedListMiddle= true;
 
-                if(this->frontTracker == head || this->frontTracker->next == head)
-                    this->isMiddleReached= true;
+                else this->startPointer= this->startPointer->next;
 
-                else this->frontTracker= this->frontTracker->next;
-
-                return true;
+                return result;
             }
-
-            else return false;
         }
 
     public:
-        bool isPalindrome(ListNode *head) {
+        bool isPalindrome(ListNode* head) {
+            this->startPointer= head;
 
-            if(head->next == NULL)
-                return true;
-
-            this->frontTracker= head;
-
-            return recursiveHelper(head->next);
+            return recursiveHelper(head);
         }
 };
